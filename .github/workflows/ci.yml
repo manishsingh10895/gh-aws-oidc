@@ -21,4 +21,5 @@ jobs:
           role-to-assume: arn:aws:iam::206080133608:role/BedRockRedFlag
           aws-region: us-east-1
       - run: aws sts get-caller-identity
+      - run: aws bedrock list-foundation-models
           
