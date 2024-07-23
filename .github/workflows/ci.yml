@@ -1,0 +1,24 @@
+name: "Aws OIDC Check"
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: read
+  id-token: write
+
+jobs:
+  redflag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          audience: sts.amazonaws.com
+          role-to-assume: arn:aws:iam::206080133608:role/BedRockRedFlag
+          aws-region: us-east-1
+      - run: aws sts get-caller-identity
+          
