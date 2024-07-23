@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 jobs:
-  redflag:
+  awslogin:
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
@@ -22,4 +22,12 @@ jobs:
           aws-region: us-east-1
       - run: aws sts get-caller-identity
       - run: aws bedrock list-foundation-models
-          
+
+  redflag:
+    runs-on: ubuntu-latest
+    container:
+      image: manishsingh10895/redflag:latest
+    steps:
+      - name: "Init Redflag"
+        run: redflag --repo manishsingh10895/gh-aws-oidc --from main --to main --bedrock-model-id anthropic.claude-3-5-sonnet-20240620-v1:0 --bedrock-profile ashish --bedrock-region us-east-1
+            
