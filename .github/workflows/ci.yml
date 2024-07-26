@@ -41,6 +41,5 @@ jobs:
           echo "AWS_ACCESS_KEY_ID=${{ needs.awslogin.outputs.creds.aws_access_key_id }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ needs.awslogin.outputs.creds.aws_secret_access_key }}" >> $GITHUB_ENV
           echo "AWS_SESSION_TOKEN=${{ needs.awslogin.outputs.creds.aws_session_token }}" >> $GITHUB_ENV
-          # redflag --repo manishsingh10895/gh-aws-oidc --from main --to main --bedrock-model-id anthropic.claude-3-5-sonnet-20240620-v1:0 --bedrock-profile ashish --bedrock-region us-east-1
 
             
