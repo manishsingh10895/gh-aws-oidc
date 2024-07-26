@@ -12,22 +12,35 @@ permissions:
 
 jobs:
   awslogin:
+    outputs:
+      creds: ${{ steps.creds.outputs }}
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
+        id: creds
         uses: aws-actions/configure-aws-credentials@v4
         with:
           audience: sts.amazonaws.com
           role-to-assume: arn:aws:iam::206080133608:role/BedRockRedFlag
           aws-region: us-east-1
+          output-credentials: true
       - run: aws sts get-caller-identity
       - run: aws bedrock list-foundation-models
 
   redflag:
+    needs: awslogin
     runs-on: ubuntu-latest
     container:
       image: manishsingh10895/redflag:latest
     steps:
       - name: "Init Redflag"
-        run: redflag --repo manishsingh10895/gh-aws-oidc --from main --to main --bedrock-model-id anthropic.claude-3-5-sonnet-20240620-v1:0 --bedrock-profile ashish --bedrock-region us-east-1
+        with:
+          aws_access_key_id: ${{ needs.awslogin.outputs.creds.AWS_ACCESS_KEY_ID }}
+        run: |
+          echo "${{ needs.awslogin.outputs }}"
+          echo "AWS_ACCESS_KEY_ID=${{ needs.awslogin.outputs.creds.aws_access_key_id }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ needs.awslogin.outputs.creds.aws_secret_access_key }}" >> $GITHUB_ENV
+          echo "AWS_SESSION_TOKEN=${{ needs.awslogin.outputs.creds.aws_session_token }}" >> $GITHUB_ENV
+          # redflag --repo manishsingh10895/gh-aws-oidc --from main --to main --bedrock-model-id anthropic.claude-3-5-sonnet-20240620-v1:0 --bedrock-profile ashish --bedrock-region us-east-1
+
             
