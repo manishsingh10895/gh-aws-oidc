@@ -13,7 +13,9 @@ permissions:
 jobs:
   awslogin:
     outputs:
-      creds: ${{ steps.creds.outputs }}
+      aws_access_key_id: ${{ steps.export-creds.outputs.aws_access_key_id }}
+      aws_secret_access_key: ${{ steps.export-creds.outputs.aws_secret_access_key }}
+      aws_session_token: ${{ steps.export-creds.outputs.aws_session_token }}
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
@@ -24,6 +26,14 @@ jobs:
           role-to-assume: arn:aws:iam::206080133608:role/BedRockRedFlag
           aws-region: us-east-1
           output-credentials: true
+
+      - name: Export AWS credentials
+        id: export-creds
+        run: |
+          echo "::set-output name=aws_access_key_id::${{ steps.creds.outputs.aws_access_key_id }}"
+          echo "::set-output name=aws_secret_access_key::${{ steps.creds.outputs.aws_secret_access_key }}"
+          echo "::set-output name=aws_session_token::${{ steps.creds.outputs.aws_session_token }}"
+
       - run: aws sts get-caller-identity
       - run: aws bedrock list-foundation-models
 
@@ -34,12 +44,11 @@ jobs:
       image: manishsingh10895/redflag:latest
     steps:
       - name: "Init Redflag"
-        with:
-          aws_access_key_id: ${{ needs.awslogin.outputs.creds.AWS_ACCESS_KEY_ID }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ needs.awslogin.outputs.aws_access_key_id }}
+          AWS_SECRET_ACCESS_KEY: ${{ needs.awslogin.outputs.aws_secret_access_key }}
+          AWS_SESSION_TOKEN: ${{ needs.awslogin.outputs.aws_session_token }}
         run: |
-          echo "${{ needs.awslogin.outputs }}"
-          echo "AWS_ACCESS_KEY_ID=${{ needs.awslogin.outputs.creds.aws_access_key_id }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ needs.awslogin.outputs.creds.aws_secret_access_key }}" >> $GITHUB_ENV
-          echo "AWS_SESSION_TOKEN=${{ needs.awslogin.outputs.creds.aws_session_token }}" >> $GITHUB_ENV
-
-            
+          echo "AWS_ACCESS_KEY_ID=${{ needs.awslogin.outputs.aws_access_key_id }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ needs.awslogin.outputs.aws_secret_access_key }}" >> $GITHUB_ENV
+          echo "AWS_SESSION_TOKEN=${{ needs.awslogin.outputs.aws_session_token }}" >> $GITHUB_ENV
