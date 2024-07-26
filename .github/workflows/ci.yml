@@ -40,15 +40,27 @@ jobs:
   redflag:
     needs: awslogin
     runs-on: ubuntu-latest
-    container:
-      image: manishsingh10895/redflag:latest
     steps:
-      - name: "Init Redflag"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ needs.awslogin.outputs.aws_access_key_id }}
-          AWS_SECRET_ACCESS_KEY: ${{ needs.awslogin.outputs.aws_secret_access_key }}
-          AWS_SESSION_TOKEN: ${{ needs.awslogin.outputs.aws_session_token }}
+      - name: "Setup Aws Credentials"
         run: |
           echo "AWS_ACCESS_KEY_ID=${{ needs.awslogin.outputs.aws_access_key_id }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ needs.awslogin.outputs.aws_secret_access_key }}" >> $GITHUB_ENV
           echo "AWS_SESSION_TOKEN=${{ needs.awslogin.outputs.aws_session_token }}" >> $GITHUB_ENV
+      - name: "Run redflag"
+        env: 
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
+        run: | 
+          echo "${AWS_ACCESS_KEY_ID}"
+          echo "${AWS_SECRET_ACCESS_KEY}"
+          echo "${AWS_SESSION_TOKEN}"
+          docker run -e AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }} \
+                     -e AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} \
+                     -e AWS_SESSION_TOKEN=${{ env.AWS_SESSION_TOKEN }} \
+                     -e RF_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+                     manishsingh10895/redflag:latest --from $GITHUB_SHA --to $GITHUB_SHA --repo $GITHUB_REPOSITORY \
+                     --bedrock-model-id anthropic.claude-3-sonnet-20240229-v1:0 \
+                     --bedrock-profile default 
+                     --bedrock-region us-east-1
+          
