@@ -42,6 +42,11 @@ jobs:
                      -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
                      -e RF_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
                      -e RF_BEDROCK_REGION=us-east-1 \
+                     --name redflag \
                      manishsingh10895/redflag:latest --to $GITHUB_SHA --repo $GITHUB_REPOSITORY \
                      --bedrock-model-id anthropic.claude-3-sonnet-20240229-v1:0 \
                      --bedrock-profile default
+      - name: Upload results folder to S3
+        run: |
+          docker cp redflag:/usr/src/app/results results
+          aws s3 cp results "s3://redflag-results/results-${GITHUB_SHA}" --recursive
