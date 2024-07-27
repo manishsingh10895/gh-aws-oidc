@@ -37,9 +37,9 @@ jobs:
 
       - name: Check Docker Image
         run: |
-          docker run -e AWS_ACCESS_KEY_ID=${{ steps.creds.outputs.aws_access_key_id }} \
-                     -e AWS_SECRET_ACCESS_KEY=${{ steps.creds.outputs.aws_secret_access_key }} \
-                     -e AWS_SESSION_TOKEN=${{ steps.creds.outputs.aws_session_token }} \
+          docker run -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+                     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY \
+                     -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
                      -e RF_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
                      manishsingh10895/redflag:latest --from $GITHUB_SHA --to $GITHUB_SHA --repo $GITHUB_REPOSITORY \
                      --bedrock-model-id anthropic.claude-3-sonnet-20240229-v1:0 \
