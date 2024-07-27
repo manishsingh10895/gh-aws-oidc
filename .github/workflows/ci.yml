@@ -26,6 +26,11 @@ jobs:
           role-to-assume: arn:aws:iam::206080133608:role/BedRockRedFlag
           aws-region: us-east-1
           output-credentials: true
+      - name: Check variables
+        run: |
+          echo ${{steps.creds.outputs.aws_access_key_id}}
+          echo ${{steps.creds.outputs.aws_secret_access_key}}
+          echo ${{steps.creds.outputs.aws_session_token}}
 
       - name: Check Docker Image
         run: |
