@@ -52,9 +52,13 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
         run: | 
-          echo "${AWS_ACCESS_KEY_ID}"
-          echo "${AWS_SECRET_ACCESS_KEY}"
-          echo "${AWS_SESSION_TOKEN}"
+          echo "$AWS_ACCESS_KEY_ID"
+          echo "$AWS_SECRET_ACCESS_KEY"
+          echo "$AWS_SESSION_TOKEN"
+          echo "${{ env.AWS_ACCESS_KEY_ID }}"
+          echo "${{ env.AWS_SECRET_ACCESS_KEY }}"
+          echo "${{ env.AWS_SESSION_TOKEN }}"
+
           docker run -e AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }} \
                      -e AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} \
                      -e AWS_SESSION_TOKEN=${{ env.AWS_SESSION_TOKEN }} \
