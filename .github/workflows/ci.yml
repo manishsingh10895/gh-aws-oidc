@@ -27,35 +27,13 @@ jobs:
           aws-region: us-east-1
           output-credentials: true
 
-      - name: Export AWS credentials
-        id: export-creds
+      - name: Check Docker Image
         run: |
-          echo "aws_access_key_id=${{ steps.creds.outputs.aws_access_key_id }}" >> $GITHUB_OUTPUT
-          echo "aws_secret_access_key=${{ steps.creds.outputs.aws_secret_access_key }}" >> $GITHUB_OUTPUT
-          echo "aws_session_token=${{ steps.creds.outputs.aws_session_token }}" >> $GITHUB_OUTPUT
-          # echo "::set-output name=aws_access_key_id::${{ steps.creds.outputs.aws_access_key_id }}"
-          # echo "::set-output name=aws_secret_access_key::${{ steps.creds.outputs.aws_secret_access_key }}"
-          # echo "::set-output name=aws_session_token::${{ steps.creds.outputs.aws_session_token }}"
-
-      - run: aws sts get-caller-identity
-      - run: aws bedrock list-foundation-models
-
-  redflag:
-    needs: awslogin
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Setup Aws Credentials"
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${{ needs.awslogin.outputs.aws_access_key_id }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ needs.awslogin.outputs.aws_secret_access_key }}" >> $GITHUB_ENV
-          echo "AWS_SESSION_TOKEN=${{ needs.awslogin.outputs.aws_session_token }}" >> $GITHUB_ENV
-          echo ${{needs.awslogin.outputs.aws_access_key_id}}
-          echo ${{needs.awslogin.outputs.aws_access_key_id}}
-      - name: "Run redflag"
-        run: | 
-          echo $AWS_ACCESS_KEY_ID
-          echo $AWS_SECRET_ACCESS_KEY
-          echo $AWS_SESSION_TOKEN
-          echo "${{ env.AWS_ACCESS_KEY_ID }}"
-          echo "${{ env.AWS_SECRET_ACCESS_KEY }}"
-          echo "${{ env.AWS_SESSION_TOKEN }}"
+          docker run -e AWS_ACCESS_KEY_ID=${{ steps.creds.outputs.aws_access_key_id }} \
+                     -e AWS_SECRET_ACCESS_KEY=${{ steps.creds.outputs.aws_secret_access_key }} \
+                     -e AWS_SESSION_TOKEN=${{ steps.creds.outputs.aws_session_token }} \
+                     -e RF_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+                     manishsingh10895/redflag:latest --from $GITHUB_SHA --to $GITHUB_SHA --repo $GITHUB_REPOSITORY \
+                     --bedrock-model-id anthropic.claude-3-sonnet-20240229-v1:0 \
+                     --bedrock-profile default 
+                     --bedrock-region us-east-1
