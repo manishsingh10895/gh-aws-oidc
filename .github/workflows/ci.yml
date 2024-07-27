@@ -33,7 +33,6 @@ jobs:
           echo ${{steps.creds.outputs.aws_session_token}}
           echo $AWS_REGION
           echo $AWS_ACCESS_KEY_ID
-          echo ${env.AWS_ACCESS_KEY_ID}
           echo ${{env.AWS_ACCESS_KEY_ID}}
 
       - name: Check Docker Image
