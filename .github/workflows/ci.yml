@@ -41,7 +41,7 @@ jobs:
                      -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
                      -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
                      -e RF_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+                     -e RF_BEDROCK_REGION=us-east-1 \
                      manishsingh10895/redflag:latest --from $GITHUB_SHA --to $GITHUB_SHA --repo $GITHUB_REPOSITORY \
                      --bedrock-model-id anthropic.claude-3-sonnet-20240229-v1:0 \
-                     --bedrock-profile default 
-                     --bedrock-region us-east-1
+                     --bedrock-profile default
